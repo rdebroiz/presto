@@ -14,7 +14,7 @@ __CMD__:
 ---
 
 __DESCRIPTION__: "Echo dynamic evaluation of available scopes in SCOPE_2"
-__SCOPE__: SCOPE_TRUC
+__SCOPE__: SCOPE_2
 
 __NAME__: echo_dynamic_scope2
 __CMD__: 

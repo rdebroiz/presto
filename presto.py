@@ -66,9 +66,9 @@ def main(arguments):
     # make PRESTO_DIR
     # ##############################################################################
 
-    PRESTO_DIR = Path(arguments['<pipe.yaml>']).abspath() + '.presto'
-    PRESTO_LOG_FILENAME = os.path.join(PRESTO_DIR, 'presto.log')
-    os.makedirs(PRESTO_DIR, exist_ok=True)
+    settings.PRESTO_DIR = Path(arguments['<pipe.yaml>']).abspath() + '.presto'
+    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR + 'presto.log'
+    os.makedirs(settings.PRESTO_DIR, exist_ok=True)
 
     # ##############################################################################
     # clean ?
@@ -82,7 +82,7 @@ def main(arguments):
     # ##############################################################################
 
     log_level = arguments['--log']
-    log.setup(PRESTO_LOG_FILENAME, log_level)
+    log.setup(settings.PRESTO_LOG_FILENAME, log_level)
     logging.debug("cmd line arguments:\n%s", pformat(arguments))
 
     # ##############################################################################

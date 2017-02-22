@@ -1,3 +1,10 @@
+# those tow file are set in presot.py
+
+PRESTO_DIR = ''
+PRESTO_LOG_FILENAME = ''
+
+# stdout color helpers
+
 OKGREEN = '\033[92m'
 FAIL = '\033[91m'
 ENDC = '\033[0m'
