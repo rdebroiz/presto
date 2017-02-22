@@ -50,6 +50,8 @@ import os
 import logging
 from pprint import pformat
 import settings
+import log
+from path import Path
 
 
 def clean():
@@ -57,9 +59,17 @@ def clean():
 
 
 def main(arguments):
-    import log
 
     """Main function"""
+
+    # ##############################################################################
+    # make PRESTO_DIR
+    # ##############################################################################
+
+    PRESTO_DIR = Path(arguments['<pipe.yaml>']).abspath() + '.presto'
+    PRESTO_LOG_FILENAME = os.path.join(PRESTO_DIR, 'presto.log')
+    os.makedirs(PRESTO_DIR, exist_ok=True)
+
     # ##############################################################################
     # clean ?
     # ##############################################################################
@@ -68,17 +78,11 @@ def main(arguments):
         clean()
 
     # ##############################################################################
-    # make PRESTO_DIR
-    # ##############################################################################
-
-    os.makedirs(settings.PRESTO_DIR, exist_ok=True)
-
-    # ##############################################################################
     # setup logs
     # ##############################################################################
 
     log_level = arguments['--log']
-    log.setup(settings.PRESTO_LOG_FILENAME, log_level)
+    log.setup(PRESTO_LOG_FILENAME, log_level)
     logging.debug("cmd line arguments:\n%s", pformat(arguments))
 
     # ##############################################################################
