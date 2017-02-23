@@ -40,13 +40,23 @@ Options:
     -v --version
         Show version.
 """
-
-import os
-import logging
-from pprint import pformat
-import settings
-import log
-from path import Path
+try:
+    import os
+    import logging
+    from pprint import pformat
+    import settings
+    import log
+    import sys
+    from docopt import docopt
+    from yaml_io import YamlIO
+    from path import Path
+except ImportError:
+    msg = (settings.BOLD +
+           "Unmeet dependencies...\n"
+           "use 'pip install -r requirement.txt'." + 
+           settings.ENDC)
+    print(msg)
+    raise
 
 
 def main(arguments):
@@ -95,15 +105,8 @@ def main(arguments):
     # ##############################################################################
     # construct data model
     # ##############################################################################
-    from yaml_io import YamlIO
-    try:
-        import path
-    except ImportError:
-        logging.critical("Presto requiered path.py to be installed, "
-                         "checkout requirement.txt.")
-        raise
 
-    yaml_document_path = path.Path(arguments['<pipe.yaml>']).abspath()
+    yaml_document_path = Path(arguments['<pipe.yaml>']).abspath()
     yaml_document = YamlIO.load_all_yaml(yaml_document_path)
 
     scope_to_override = {}
@@ -150,12 +153,5 @@ def main(arguments):
 
 # -- Main
 if __name__ == '__main__':
-    import sys
-    try:
-        from docopt import docopt
-    except ImportError as err:
-        print("presto need docopt", err)
-        sys.exit(1)
-
     arguments = docopt(__doc__, version='presto 1.0.0')
     main(arguments)

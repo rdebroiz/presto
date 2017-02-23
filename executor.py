@@ -6,12 +6,7 @@ from yaml_io import YamlIO
 from yaml_io import Literal
 import settings
 
-try:
-    import path
-except ImportError:
-    logging.critical("Presto requiered path.py to be installed, "
-                     "checkout requirement.txt.")
-    raise
+import path
 
 import sys
 import subprocess

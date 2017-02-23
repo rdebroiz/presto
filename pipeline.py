@@ -1,18 +1,7 @@
 import logging
 from pprint import pformat
-
-try:
-    import path
-except ImportError:
-    logging.critical("Pesto requiered path.py to be installed, "
-                     "checkout requirement.txt.")
-    raise
-try:
-    import networkx as nx
-except ImportError:
-    logging.critical("Pesto requiered path.py to be installed, "
-                     "checkout requirement.txt.")
-    raise
+import path
+import networkx as nx
 
 from node import Root
 
