@@ -57,7 +57,7 @@ try:
 except ImportError:
     msg = (settings.BOLD +
            "Unmeet dependencies...\n"
-           "use 'pip install -r requirement.txt'." + 
+           "use 'pip install -r requirement.txt'." +
            settings.ENDC)
     print(msg)
     raise
@@ -166,7 +166,8 @@ def execute_pipeline(arguments):
 def main(arguments):
     """Main function"""
 
-    settings.PRESTO_DIR = Path(arguments['<pipe.yaml>']).dirname().joinpath('.presto')
+    settings.PIPELINE_FILENAME = Path(arguments['<pipe.yaml>']).dirname()
+    settings.PRESTO_DIR = settings.PIPELINE_FILENAME.joinpath('.presto')
     settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
 
     if arguments['--report']:
