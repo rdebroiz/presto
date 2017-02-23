@@ -4,13 +4,12 @@
 
 Usage:
     presto [-l <log_level> | --log <log_level>]
-          [-w <workers> | --workers <workers>]
-          [-p | --print]
-          [-f | --force]
-          [-n <node_name> | --node <node_name>]
-          [-s <name:regexp> | --override_scope <name:regexp>]...
-          <pipe.yaml>
-    presto -c | --clean
+           [-w <workers> | --workers <workers>]
+           [-p | --print]
+           [-f | --force]
+           [-n <node_name> | --node <node_name>]
+           [-s <name:regexp> | --override_scope <name:regexp>]...
+           <pipe.yaml>
     presto -h | --help
     presto -v |--version
 
@@ -36,9 +35,6 @@ Options:
         A yaml file starting with the data structure description
         and describing the pipeline.
 
-    -c --clean
-        Clean  current directory from presto generated files.
-
     -h --help
         Show this screen.
 
@@ -54,10 +50,6 @@ import log
 from path import Path
 
 
-def clean():
-    print("clean")
-
-
 def main(arguments):
 
     """Main function"""
@@ -69,13 +61,6 @@ def main(arguments):
     settings.PRESTO_DIR = Path(arguments['<pipe.yaml>']).abspath() + '.presto'
     settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR + 'presto.log'
     os.makedirs(settings.PRESTO_DIR, exist_ok=True)
-
-    # ##############################################################################
-    # clean ?
-    # ##############################################################################
-
-    if arguments['--clean']:
-        clean()
 
     # ##############################################################################
     # setup logs
