@@ -58,9 +58,9 @@ def main(arguments):
     # make PRESTO_DIR
     # ##############################################################################
 
-    settings.PRESTO_DIR = Path(arguments['<pipe.yaml>']).abspath() + '.presto'
-    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR + 'presto.log'
-    os.makedirs(settings.PRESTO_DIR, exist_ok=True)
+    settings.PRESTO_DIR = Path(arguments['<pipe.yaml>']).dirname().joinpath('.presto')
+    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
+    os.makedirs(str(settings.PRESTO_DIR), exist_ok=True)
 
     # ##############################################################################
     # setup logs
