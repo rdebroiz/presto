@@ -10,6 +10,8 @@ Usage:
            [-n <node_name> | --node <node_name>]
            [-s <name:regexp> | --override_scope <name:regexp>]...
            <pipe.yaml>
+    presto [-r | --report]
+           <pipe.yaml>
     presto -h | --help
     presto -v |--version
 
@@ -31,6 +33,8 @@ Options:
         Use this option to override the regular expression used to build
         a scope.
         Example '-s SCOPE_NAME:reg-exp'
+    -r --report
+        Produce a report of the last execution of the pipeline.
     <pipe.yaml>
         A yaml file starting with the data structure and pipeline description
 
@@ -59,16 +63,15 @@ except ImportError:
     raise
 
 
-def main(arguments):
+def print_report(arguments):
+    print("report!")
 
-    """Main function"""
 
+def execute_pipeline(arguments):
     # ##############################################################################
     # make PRESTO_DIR
     # ##############################################################################
 
-    settings.PRESTO_DIR = Path(arguments['<pipe.yaml>']).dirname().joinpath('.presto')
-    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
     os.makedirs(str(settings.PRESTO_DIR), exist_ok=True)
 
     # ##############################################################################
@@ -149,6 +152,18 @@ def main(arguments):
     # execute pipeline
     # ##############################################################################
     executor.execute(arguments['--node'])
+
+
+def main(arguments):
+    """Main function"""
+
+    settings.PRESTO_DIR = Path(arguments['<pipe.yaml>']).dirname().joinpath('.presto')
+    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
+
+    if arguments['--report']:
+        print_report(arguments)
+    else:
+        execute_pipeline(arguments)
 
 
 # -- Main
