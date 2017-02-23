@@ -64,7 +64,16 @@ except ImportError:
 
 
 def print_report(arguments):
-    print("report!")
+    # First list all the .yaml file in the .presto dir.
+    # Then sort them by modification date, so report will be printed
+    # the same order than the pipeline have been executed.
+
+    node_executions = settings.PRESTO_DIR.files()
+    # only keep node executions.
+    node_executions = [x for x in node_executions
+                       if x.ext == settings.NODE_EXEC_SUFFIX]
+    node_executions.sort(key=lambda x: x.mtime)
+
 
 
 def execute_pipeline(arguments):
