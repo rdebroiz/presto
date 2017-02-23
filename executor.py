@@ -179,7 +179,8 @@ class ThreadedPipelineExecutor(PipelineExecutor):
         # This dict is what is load/dump in yaml
         max_workers = self._max_workers * node.workers_modifier
 
-        node_filname = settings.PRESTO_DIR.joinpath(node.name + ".yaml")
+        node_filname = settings.PRESTO_DIR.joinpath(node.name +
+                                                    settings.NODE_EXEC_SUFFIX)
         if node_filname.exists():
             scope_values_status = YamlIO.load_yaml(node_filname)
         else:
