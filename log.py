@@ -17,6 +17,7 @@ def setup(log_file, lvl):
         sys.exit(1)
 
     logging.basicConfig(filename=log_file,
+                        filemode='w',
                         level=numeric_level,
                         format='%(levelname)s @ %(asctime)s '
                         '->\n %(message)s\n',
