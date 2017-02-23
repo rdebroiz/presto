@@ -15,7 +15,7 @@ Usage:
 
 Options:
     -w --workers <workers>
-        Number max of different processus to launch together.
+        Max number of different processus to launch together.
         [default: 0] -> Number of host's CPU.
     -l --log <log_level>
         Level of verbosity to print in the log file.
@@ -32,8 +32,7 @@ Options:
         a scope.
         Example '-s SCOPE_NAME:reg-exp'
     <pipe.yaml>
-        A yaml file starting with the data structure description
-        and describing the pipeline.
+        A yaml file starting with the data structure and pipeline description
 
     -h --help
         Show this screen.
