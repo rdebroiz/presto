@@ -1,7 +1,9 @@
+from path import Path
+
 # those tow file are set in presot.py
 
-PRESTO_DIR = ''
-PRESTO_LOG_FILENAME = ''
+PRESTO_DIR = Path('')
+PRESTO_LOG_FILENAME = Path('')
 
 # extention helpers:
 
@@ -16,4 +18,3 @@ RETURN = '\033[K\r'
 ENDC = '\033[0m'
 BOLD = '\033[1m'
 ENDCBOLD = ENDC + BOLD
-
