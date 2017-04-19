@@ -12,6 +12,7 @@ import sys
 import subprocess
 import os
 import datetime
+from pprint import pformat
 
 from collections import OrderedDict
 
@@ -241,4 +242,4 @@ class ThreadedPipelineExecutor(PipelineExecutor):
         # print new line
         print("")
         if scope_values_failed:
-            logging.error("Failed scope value: \n%s", scope_values_failed)
+            logging.error("Failed scope value: \n%s", pformat(scope_values_failed))
