@@ -10,6 +10,8 @@ Usage:
            [-n <node_name> | --node <node_name>]
            [-s <name:regexp> | --override_scope <name:regexp>]...
            <pipe.yaml>
+    presto [-r | --report]
+           <pipe.yaml>
     presto -h | --help
     presto -v |--version
 
@@ -31,6 +33,8 @@ Options:
         Use this option to override the regular expression used to build
         a scope.
         Example '-s SCOPE_NAME:reg-exp'
+    -r --report
+        Produce a report of the last execution of the pipeline.
     <pipe.yaml>
         A yaml file starting with the data structure and pipeline description
 
@@ -59,9 +63,19 @@ except ImportError:
     raise
 
 
-def main(arguments):
-    """Main function"""
+def print_report(arguments):
+    # First list all the .yaml file in the .presto dir.
+    # Then sort them by modification date, so report will be printed
+    # the same order than the pipeline has been executed.
 
+    node_executions = settings.PRESTO_DIR.files()
+    # only keep node executions.
+    node_executions = [x for x in node_executions
+                       if x.ext == settings.NODE_EXEC_SUFFIX]
+    node_executions.sort(key=lambda x: x.mtime)
+
+
+def execute_pipeline(arguments):
     # ##############################################################################
     # make PRESTO_DIR
     # ##############################################################################
@@ -151,7 +165,20 @@ def main(arguments):
     executor.execute(arguments['--node'])
 
 
+def main(arguments):
+    """Main function"""
+
+    settings.PIPELINE_FILENAME = Path(arguments['<pipe.yaml>']).dirname()
+    settings.PRESTO_DIR = settings.PIPELINE_FILENAME.joinpath('.presto')
+    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
+
+    if arguments['--report']:
+        print_report(arguments)
+    else:
+        execute_pipeline(arguments)
+
+
 # -- Main
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='presto 1.0.1')
+    arguments = docopt(__doc__, version='presto 1.1')
     main(arguments)

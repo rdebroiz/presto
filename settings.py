@@ -1,7 +1,13 @@
+from path import Path
+
 # those tow file are set in presot.py
 
-PRESTO_DIR = ''
-PRESTO_LOG_FILENAME = ''
+PRESTO_DIR = Path('')
+PRESTO_LOG_FILENAME = Path('')
+
+# extention helpers:
+
+NODE_EXEC_SUFFIX = '.nexec'
 
 # stdout color helpers
 
