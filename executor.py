@@ -238,4 +238,5 @@ class ThreadedPipelineExecutor(PipelineExecutor):
         # print new line
         print("")
         if scope_values_failed:
-            logging.error("Failed scope value: \n%s", pformat(scope_values_failed))
+            logging.error("Failed scope value: \n%s",
+                          pformat(scope_values_failed))
