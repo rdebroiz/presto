@@ -4,20 +4,12 @@ from concurrent.futures import ThreadPoolExecutor
 from evaluator import Evaluator
 from yaml_io import YamlIO
 from yaml_io import Literal
+from node import ROOT_NAME
 import settings
-
-try:
-    import path
-except ImportError:
-    logging.critical("Presto requiered path.py to be installed, "
-                     "checkout requirement.txt.")
-    raise
-
 import sys
 import subprocess
-import os
 import datetime
-
+from pprint import pformat
 from collections import OrderedDict
 
 
@@ -62,7 +54,7 @@ class PipelineExecutor():
         sys.stdout.flush()
 
     def execute(self, node_name=None):
-        if node_name is None:
+        if node_name is None or node_name == ROOT_NAME:
             node = self._pipeline.root
         else:
             try:
@@ -137,7 +129,7 @@ class PipelineExecutor():
             except PermissionError as perm_err:
                 logging.error("Permission denied to launch '%s':\n%s",
                               " ".join(cmd),
-                              perm_error)
+                              perm_err)
                 return_status["status"] = "FAILURE"
                 return_status["context"] = "PERMISSION_DENIED"
                 perm_err = remove_space_before_new_line(perm_err.strerror)
@@ -184,8 +176,7 @@ class ThreadedPipelineExecutor(PipelineExecutor):
         # This dict is what is load/dump in yaml
         max_workers = self._max_workers * node.workers_modifier
 
-        node_filname = path.Path(os.path.join(settings.PRESTO_DIR,
-                                 node.name + ".yaml"))
+        node_filname = settings.PRESTO_DIR.joinpath(node.name + ".yaml")
         if node_filname.exists():
             scope_values_status = YamlIO.load_yaml(node_filname)
         else:
@@ -246,4 +237,4 @@ class ThreadedPipelineExecutor(PipelineExecutor):
         # print new line
         print("")
         if scope_values_failed:
-            logging.error("Failed scope value: \n%s", scope_values_failed)
+            logging.error("Failed scope value: \n%s", pformat(scope_values_failed))

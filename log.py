@@ -17,13 +17,14 @@ def setup(log_file, lvl):
         sys.exit(1)
 
     logging.basicConfig(filename=log_file,
+                        filemode='w',
                         level=numeric_level,
                         format='%(levelname)s @ %(asctime)s '
                         '->\n %(message)s\n',
                         datefmt='%m/%d/%Y %I:%M:%S %p')
     # define a Handler which writes INFO messages or higher to the sys.stderr
     console = logging.StreamHandler()
-    console.setLevel(logging.ERROR)
+    console.setLevel(logging.WARNING)
     # set a format which is simpler for console use
 
     formatter = logging.Formatter(settings.BOLD +

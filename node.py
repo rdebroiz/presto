@@ -1,5 +1,6 @@
 import logging
 import settings
+from settings import FAIL, ENDCBOLD
 from pprint import pformat
 
 ROOT_NAME = "root"
@@ -14,46 +15,66 @@ class Node():
     _parents = None
     _cmd_for_value = None
 
-    def __init__(self, yaml_doc, fathers):
+    def __init__(self, yaml_doc):
         # initialise mutable attributs
         self._parents = set()
-        self.parents.add(ROOT_NAME)
+        self._parents.add(ROOT_NAME)
         self._cmd_for_value = dict()
 
         from data_model import DataModel
         from evaluator import Evaluator
+
         try:
             self._name = yaml_doc['__NAME__']
         except KeyError:
-            logging.error("missing '__NAME__' key")
+            logging.error("Missing '__NAME__' key. YAML document:\n"
+                          "{}".format(yaml_doc))
             raise
+
         try:
             self._description = yaml_doc['__DESCRIPTION__']
         except KeyError:
-            logging.error("missing '__DESCRIPTION__' key")
+            logging.error("Missing '__DESCRIPTION__' key. YAML document:\n"
+                          "{}".format(yaml_doc))
             raise
+
         try:
             scope_name = yaml_doc['__SCOPE__']
         except KeyError:
-            logging.error("missing '__SCOPE__' key in %s", self._name)
+            logging.error("Missing '__SCOPE__' key in {}".format(self._name))
+
         try:
             self._scope = DataModel.scopes[scope_name]
         except KeyError:
-            logging.error("'" + settings.FAIL + "{}".format(scope_name) +
+            logging.error(settings.FAIL + "'{}'".format(scope_name) +
                           settings.ENDCBOLD +
-                          "' is not a valid scope, must be in: " +
+                          " is not a valid scope, you have declared scopes:\n"
                           "'{}'".format(pformat(DataModel.scopes.keys())))
 
         try:
             self._cmd = yaml_doc['__CMD__']
         except KeyError:
-            logging.error("missing '__CMD__' key")
+            logging.error("Missing '__CMD__' key")
             raise
+
         try:
-            self._parents = yaml_doc['__DEPEND_ON__']
+            self._parents = self._parents.union(yaml_doc['__DEPEND_ON__'])
         except KeyError:
-            for n in fathers:
-                self._parents.add(n)
+            msg = ("Node '{}' has no '__DEPEND_ON__' section\n"
+                   "\tYou should consider to provided it one.\n"
+                   "\tDefault behavior: no dependece.".format(self._name))
+            logging.warning(msg)
+            pass  # root will be the default parent
+        except TypeError:
+            if yaml_doc['__DEPEND_ON__'] is None:
+                msg = ("Node '{}' has an empty '__DEPEND_ON__' section\n"
+                       "\tDid you forget to had the dependeces?\n"
+                       "\tGive an empty list:  '__DEPEND_ON__ : []' "
+                       "\tto have no dependence and no warning\n"
+                       "\tDefault behavior: no dependece.".format(self._name))
+                logging.warning(msg)
+            else:
+                raise
         try:
             self._workers_modifier = yaml_doc['__WORKERS_MODIFIER__']
         except KeyError:

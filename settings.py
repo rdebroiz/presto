@@ -1,8 +1,9 @@
-import os
+# those tow file are set in presot.py
 
-PRESTO_DIR = os.path.join(os.curdir, '.presto')
-PRESTO_LOG_FILENAME = os.path.join(PRESTO_DIR, 'presto.log')
+PRESTO_DIR = ''
+PRESTO_LOG_FILENAME = ''
 
+# stdout color helpers
 
 OKGREEN = '\033[92m'
 FAIL = '\033[91m'

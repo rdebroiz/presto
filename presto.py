@@ -4,19 +4,18 @@
 
 Usage:
     presto [-l <log_level> | --log <log_level>]
-          [-w <workers> | --workers <workers>]
-          [-p | --print]
-          [-f | --force]
-          [-n <node_name> | --node <node_name>]
-          [-s <name:regexp> | --override_scope <name:regexp>]...
-          <pipe.yaml>
-    presto -c | --clean
+           [-w <workers> | --workers <workers>]
+           [-p | --print]
+           [-f | --force]
+           [-n <node_name> | --node <node_name>]
+           [-s <name:regexp> | --override_scope <name:regexp>]...
+           <pipe.yaml>
     presto -h | --help
     presto -v |--version
 
 Options:
     -w --workers <workers>
-        Number max of different processus to launch together.
+        Max number of different processus to launch together.
         [default: 0] -> Number of host's CPU.
     -l --log <log_level>
         Level of verbosity to print in the log file.
@@ -33,11 +32,7 @@ Options:
         a scope.
         Example '-s SCOPE_NAME:reg-exp'
     <pipe.yaml>
-        A yaml file starting with the data structure description
-        and describing the pipeline.
-
-    -c --clean
-        Clean  current directory from presto generated files.
+        A yaml file starting with the data structure and pipeline description
 
     -h --help
         Show this screen.
@@ -45,33 +40,36 @@ Options:
     -v --version
         Show version.
 """
-
-import os
-import logging
-from pprint import pformat
-import settings
-
-
-def clean():
-    print("clean")
+try:
+    import os
+    import logging
+    from pprint import pformat
+    import settings
+    import log
+    import sys
+    from docopt import docopt
+    from yaml_io import YamlIO
+    from path import Path
+except ImportError:
+    msg = (settings.BOLD +
+           "Unmeet dependencies...\n"
+           "use 'pip install -r requirement.txt'." +
+           settings.ENDC)
+    print(msg)
+    raise
 
 
 def main(arguments):
-    import log
-
     """Main function"""
-    # ##############################################################################
-    # clean ?
-    # ##############################################################################
-
-    if arguments['--clean']:
-        clean()
 
     # ##############################################################################
     # make PRESTO_DIR
     # ##############################################################################
 
-    os.makedirs(settings.PRESTO_DIR, exist_ok=True)
+    settings.PRESTO_DIR = Path(
+        arguments['<pipe.yaml>']).dirname().joinpath('.presto')
+    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
+    os.makedirs(str(settings.PRESTO_DIR), exist_ok=True)
 
     # ##############################################################################
     # setup logs
@@ -107,15 +105,8 @@ def main(arguments):
     # ##############################################################################
     # construct data model
     # ##############################################################################
-    from yaml_io import YamlIO
-    try:
-        import path
-    except ImportError:
-        logging.critical("Presto requiered path.py to be installed, "
-                         "checkout requirement.txt.")
-        raise
 
-    yaml_document_path = path.Path(arguments['<pipe.yaml>']).abspath()
+    yaml_document_path = Path(arguments['<pipe.yaml>']).abspath()
     yaml_document = YamlIO.load_all_yaml(yaml_document_path)
 
     scope_to_override = {}
@@ -144,10 +135,10 @@ def main(arguments):
     # ##############################################################################
 
     try:
-        import pipeline as pipi
-        pipeline = pipi.Pipeline(yaml_document)
-    except pipi.PipelineCyclicError:
-        logging.critical("Pipeline can't be cyclic")
+        from pipeline import Pipeline, PipelineError
+        pipeline = Pipeline(yaml_document)
+    except PipelineError:
+        logging.critical("Error while constructing pipeline")
         sys.exit(-1)
     from executor import ThreadedPipelineExecutor
     executor = ThreadedPipelineExecutor(pipeline, max_workers)
@@ -162,12 +153,5 @@ def main(arguments):
 
 # -- Main
 if __name__ == '__main__':
-    import sys
-    try:
-        from docopt import docopt
-    except ImportError as err:
-        print("presto need docopt", err)
-        sys.exit(1)
-
-    arguments = docopt(__doc__, version='presto 1.0.0')
+    arguments = docopt(__doc__, version='presto 1.0.1')
     main(arguments)

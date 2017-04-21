@@ -1,12 +1,6 @@
 from concurrent.futures.thread import threading
 import logging
-
-try:
-    import yaml
-except ImportError as err:
-    logging.critical("Presto requiered PyYaml to be installed, "
-                     "checkout requirement.txt.")
-    raise
+import yaml
 from collections import OrderedDict
 
 
