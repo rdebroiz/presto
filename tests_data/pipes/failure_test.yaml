@@ -1,4 +1,5 @@
 __DESCRIPTION__: "Wrong command name"
+__DEPEND_ON__: ["echo_dynamic_scope4"]
 __SCOPE__: __ROOT__
 
 __NAME__: wrong_command_name
@@ -9,6 +10,7 @@ __CMD__:
 ---
 
 __DESCRIPTION__: "Invalid argument"
+__DEPEND_ON__: ["wrong_command_name"]
 __SCOPE__: SCOPE_2
 
 __NAME__: invalid_argument

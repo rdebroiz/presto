@@ -1,3 +1,4 @@
+__DEPEND_ON__: []
 __DESCRIPTION__: "Echo dynamic evaluation of available scopes in SCOPE_1"
 __SCOPE__: SCOPE_1
 
@@ -26,6 +27,7 @@ __CMD__:
 
 ---
 
+__DEPEND_ON__: ["echo_dynamic_scope2"]
 __DESCRIPTION__: "Echo dynamic evaluation of available scopes in SCOPE_3"
 __SCOPE__: SCOPE_3
 
