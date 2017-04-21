@@ -5,12 +5,8 @@ from evaluator import Evaluator
 from yaml_io import YamlIO
 from yaml_io import Literal
 import settings
-
-import path
-
 import sys
 import subprocess
-import os
 import datetime
 from pprint import pformat
 
@@ -133,7 +129,7 @@ class PipelineExecutor():
             except PermissionError as perm_err:
                 logging.error("Permission denied to launch '%s':\n%s",
                               " ".join(cmd),
-                              perm_error)
+                              perm_err)
                 return_status["status"] = "FAILURE"
                 return_status["context"] = "PERMISSION_DENIED"
                 perm_err = remove_space_before_new_line(perm_err.strerror)

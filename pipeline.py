@@ -47,8 +47,8 @@ class Pipeline():
                     self._build_nodes_from_documents(d)
                 else:
                     try:
-                        node = Node(doc, self._graph.nodes())
-                    except:
+                        node = Node(doc)
+                    except BaseException:
                         logging.critical("Unable to build node from: %s",
                                          pformat(doc))
                         raise
