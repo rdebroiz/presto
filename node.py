@@ -14,7 +14,7 @@ class Node():
     _parents = None
     _cmd_for_value = None
 
-    def __init__(self, yaml_doc, fathers):
+    def __init__(self, yaml_doc):
         # initialise mutable attributs
         self._parents = set()
         self.parents.add(ROOT_NAME)
@@ -52,8 +52,7 @@ class Node():
         try:
             self._parents = yaml_doc['__DEPEND_ON__']
         except KeyError:
-            for n in fathers:
-                self._parents.add(n)
+            pass  # root will be the default parent
         try:
             self._workers_modifier = yaml_doc['__WORKERS_MODIFIER__']
         except KeyError:
