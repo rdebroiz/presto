@@ -2,6 +2,7 @@ import logging
 from pprint import pformat
 import path
 import networkx as nx
+from settings import FAIL, ENDCBOLD
 
 from node import Root
 
@@ -11,6 +12,10 @@ class PipelineError(Exception):
 
 
 class PipelineCyclicError(PipelineError):
+    pass
+
+
+class PipelineDependenceError(PipelineError):
     pass
 
 
@@ -30,6 +35,8 @@ class Pipeline():
             raise PipelineCyclicError()  # TODO what would be relevant here?
         # refine graph
         self._thin()
+        if self._check_nodes_parents():
+            raise PipelineDependenceError()
 
     def _build_nodes_from_documents(self, documents):
         from node import Node
@@ -49,7 +56,7 @@ class Pipeline():
                     try:
                         node = Node(doc)
                     except BaseException:
-                        logging.critical("Unable to build node from: %s",
+                        logging.critical("Unable to build node from: \n%s",
                                          pformat(doc))
                         raise
                     self._graph.add_node(node.name)
@@ -122,9 +129,21 @@ class Pipeline():
                             self._graph.remove_edge(cur_p, n)
                             break
 
+    def _check_nodes_parents(self):
+        error = 0
+        for node in self.nodes.values():
+            for parent in node.parents:
+                if parent not in self.nodes.keys():
+                    msg = ("Cant find node: " +
+                           FAIL + "'{}'".format(parent) + ENDCBOLD +
+                           "\nDeclared in __DEPEND_ON__ for node: '{}'".format(node.name))
+                    logging.error(msg)
+                    error += 1
+        return error
+
     def walk(self, node):
-        # TODO there must have a better way to do it.
-        # yield node
+            # TODO there must have a better way to do it.
+            # yield node
         for n in nx.topological_sort(self._graph,
                                      nx.descendants(self._graph, node.name)):
             yield self._nodes[n]

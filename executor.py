@@ -4,12 +4,12 @@ from concurrent.futures import ThreadPoolExecutor
 from evaluator import Evaluator
 from yaml_io import YamlIO
 from yaml_io import Literal
+from node import ROOT_NAME
 import settings
 import sys
 import subprocess
 import datetime
 from pprint import pformat
-
 from collections import OrderedDict
 
 
@@ -54,7 +54,7 @@ class PipelineExecutor():
         sys.stdout.flush()
 
     def execute(self, node_name=None):
-        if node_name is None:
+        if node_name is None or node_name == ROOT_NAME:
             node = self._pipeline.root
         else:
             try:
