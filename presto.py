@@ -81,6 +81,9 @@ def execute_pipeline(arguments):
     # make PRESTO_DIR
     # ##############################################################################
 
+    settings.PRESTO_DIR = Path(
+        arguments['<pipe.yaml>']).dirname().joinpath('.presto')
+    settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
     os.makedirs(str(settings.PRESTO_DIR), exist_ok=True)
 
     # ##############################################################################
@@ -147,10 +150,10 @@ def execute_pipeline(arguments):
     # ##############################################################################
 
     try:
-        import pipeline as pipi
-        pipeline = pipi.Pipeline(yaml_document)
-    except pipi.PipelineCyclicError:
-        logging.critical("Pipeline can't be cyclic")
+        from pipeline import Pipeline, PipelineError
+        pipeline = Pipeline(yaml_document)
+    except PipelineError:
+        logging.critical("Error while constructing pipeline")
         sys.exit(-1)
     from executor import ThreadedPipelineExecutor
     executor = ThreadedPipelineExecutor(pipeline, max_workers)
