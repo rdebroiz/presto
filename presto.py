@@ -6,6 +6,7 @@ Usage:
     presto [-l <log_level> | --log <log_level>]
            [-w <workers> | --workers <workers>]
            [-p | --print]
+           [-d | --display]
            [-f | --force]
            [-n <node_name> | --node <node_name>]
            [-s <name:regexp> | --override_scope <name:regexp>]...
@@ -25,6 +26,8 @@ Options:
         [default: INFO]
     -p --print
         Print the execution of the pipeline only.
+    -d --display
+        display a representation of the pipeline.
     -f --force
         Force execution of any node of the pipeline.
     -n --node <node_name>
@@ -76,26 +79,26 @@ def print_report(arguments):
 
 
 def execute_pipeline(arguments):
-    # ##############################################################################
+    # ##########################################################################
     # make PRESTO_DIR
-    # ##############################################################################
+    # ##########################################################################
 
     settings.PRESTO_DIR = Path(
         arguments['<pipe.yaml>']).dirname().joinpath('.presto')
     settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
     os.makedirs(str(settings.PRESTO_DIR), exist_ok=True)
 
-    # ##############################################################################
+    # ##########################################################################
     # setup logs
-    # ##############################################################################
+    # ##########################################################################
 
     log_level = arguments['--log']
     log.setup(settings.PRESTO_LOG_FILENAME, log_level)
     logging.debug("cmd line arguments:\n%s", pformat(arguments))
 
-    # ##############################################################################
+    # ##########################################################################
     # get number of workers to use:
-    # ##############################################################################
+    # ##########################################################################
 
     try:
         max_workers = arguments['--workers']
@@ -116,9 +119,9 @@ def execute_pipeline(arguments):
                          "--workers option yourself")
         raise
 
-    # ##############################################################################
+    # ##########################################################################
     # construct data model
-    # ##############################################################################
+    # ##########################################################################
 
     yaml_document_path = Path(arguments['<pipe.yaml>']).abspath()
     yaml_document = YamlIO.load_all_yaml(yaml_document_path)
@@ -144,24 +147,28 @@ def execute_pipeline(arguments):
         logging.critical("empty <pipe.yaml> file.")
         sys.exit(1)
 
-    # ##############################################################################
+    # ##########################################################################
     # construct pipeline
-    # ##############################################################################
+    # ##########################################################################
 
     try:
         from pipeline import Pipeline, PipelineError
-        pipeline = Pipeline(yaml_document)
+        pipe = Pipeline(yaml_document)
     except PipelineError:
         logging.critical("Error while constructing pipeline")
-        sys.exit(-1)
+        sys.exit(1)
+
+    if arguments['--display']:
+        pipe.show()
+        sys.exit()
+
+    # ##########################################################################
+    # execute pipeline
+    # ##########################################################################
     from executor import ThreadedPipelineExecutor
-    executor = ThreadedPipelineExecutor(pipeline, max_workers)
+    executor = ThreadedPipelineExecutor(pipe, max_workers)
     executor.print_only = arguments['--print']
     executor.force_execution = arguments['--force']
-
-    # ##############################################################################
-    # execute pipeline
-    # ##############################################################################
     executor.execute(arguments['--node'])
 
 
@@ -171,6 +178,7 @@ def main(arguments):
     settings.PIPELINE_FILENAME = Path(arguments['<pipe.yaml>']).dirname()
     settings.PRESTO_DIR = settings.PIPELINE_FILENAME.joinpath('.presto')
     settings.PRESTO_LOG_FILENAME = settings.PRESTO_DIR.joinpath('presto.log')
+    settings.PRESTO_GRAPH_FILENAME = settings.PRESTO_DIR.joinpath('graph.png')
 
     if arguments['--report']:
         print_report(arguments)
