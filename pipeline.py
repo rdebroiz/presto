@@ -2,7 +2,7 @@ import logging
 from pprint import pformat
 import path
 import networkx as nx
-from settings import FAIL, ENDCBOLD
+from settings import FAIL, ENDCBOLD, PRESTO_GRAPH_FILENAME, BOLD, ENDC
 
 from node import Root
 
@@ -37,6 +37,12 @@ class Pipeline():
         self._thin()
         if self._check_nodes_parents():
             raise PipelineDependenceError()
+
+    def show(self):
+        agraph = nx.drawing.nx_agraph.to_agraph(self._graph)
+        print(BOLD, agraph, ENDC)
+        agraph.layout(prog='dot')
+        agraph.draw(PRESTO_GRAPH_FILENAME)
 
     def _build_nodes_from_documents(self, documents):
         from node import Node

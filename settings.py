@@ -4,6 +4,7 @@ from path import Path
 
 PRESTO_DIR = Path('')
 PRESTO_LOG_FILENAME = Path('')
+PRESTO_GRAPH_FILENAME = Path('')
 
 # extention helpers:
 

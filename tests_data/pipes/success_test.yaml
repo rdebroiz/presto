@@ -13,7 +13,6 @@ __CMD__:
     SCOPE_1 -> ?{SCOPE_1} 
 
 ---
-__DEPEND_ON__: ["echo_dynamic_scope1"]
 __DESCRIPTION__: "Echo dynamic evaluation of available scopes in SCOPE_2"
 __SCOPE__: SCOPE_2
 
