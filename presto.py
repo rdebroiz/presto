@@ -188,5 +188,5 @@ def main(arguments):
 
 # -- Main
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='presto 1.1')
+    arguments = docopt(__doc__, version='presto 1.2')
     main(arguments)
